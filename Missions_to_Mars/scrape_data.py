@@ -11,15 +11,17 @@ def scrape_info():
     executable_path = {'executable_path': ChromeDriverManager().install()}
     browser = Browser('chrome', **executable_path, headless=False)
 
+    print("Starting to scrape")
     News_header, News_article = get_mars_news()
+    print(News_header,News_article)
 
     mars_data = {
         'news_title' : News_header,
         'news_article' : News_article,
-        'featured_image' : get_mars_images(browser)
-  #      'mars_facts' : mars_facts(),
-  #      'hemispheres' : img_urls_titles,
-  #      'last_modified' : dt.datetime.now()
+        'featured_image' : get_mars_images(browser),
+        'mars_facts' : get_mars_facts(),
+        #'hemispheres' : get_mars_hemispheres(browser),
+        'last_modified' : dt.datetime.now()
     }
 
     # Close the browser after scraping
@@ -35,6 +37,7 @@ def get_mars_news():
 
     # Retrieve page with the requests module
     response = requests.get(url)
+  
     # Create BeautifulSoup object; parse with 'html.parser'
     soup = BeautifulSoup(response.text, 'html.parser')
     
@@ -65,13 +68,52 @@ def get_mars_images(browser):
     return featuredimage
 
 
-# def get_mars_facts():
+def get_mars_facts():
+
+    df = pd.read_html('https://galaxyfacts-mars.com/')[0]
+    df.columns=['Description', 'Mars', 'Earth']
+    df.set_index('Description', inplace=True)
+    html_table = df.to_html()
+    html_table.replace('\n', '')
+
+    return df.to_html(classes="table table-striped")
 
 
-#     return X
+def get_mars_hemispheres(browser):
 
+    url = 'https://marshemispheres.com/'
+    browser.visit(url) 
 
-# def get_mars_hemispheres():
+    html = browser.html
 
+    # Create an empty list to store the dicts for image name and urls
+    hemisphere_image_urls = []
 
-#     return X
+    # Create BeautifulSoup object; parse with 'html.parser'
+    soup = BeautifulSoup(html, 'html.parser')
+    images = soup.find_all('img', class_="thumb")
+
+    # Retrieve all elements that contain image
+    for i in range(len(images)):
+    
+        hemispheres = {}
+    
+        browser.find_by_tag('img.thumb')[i].click()
+
+        full_img = browser.find_by_text('Sample').first
+        hemispheres['img_url'] = full_img['href']
+    
+        # get the image name, trim it, and add it to the hemispheres dict     
+        hemispheres['title'] = browser.find_by_css('h2.title').text 
+        if hemispheres['title'].endswith(' Enhanced thumbnail'):
+            hemispheres['title'] = hemispherename[:-(len(' Enhanced thumbnail'))]
+ 
+        hemisphere_image_urls.append(hemispheres)  
+            
+    browser.back()
+        
+    print(hemisphere_image_urls)
+
+    browser.quit() 
+
+    return (hemisphere_image_urls)
