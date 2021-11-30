@@ -20,7 +20,7 @@ def scrape_info():
         'news_article' : News_article,
         'featured_image' : get_mars_images(browser),
         'mars_facts' : get_mars_facts(),
-        #'hemispheres' : get_mars_hemispheres(browser),
+        'hemispheres' : get_mars_hemispheres(browser),
         'last_modified' : dt.datetime.now()
     }
 
@@ -93,24 +93,23 @@ def get_mars_hemispheres(browser):
     soup = BeautifulSoup(html, 'html.parser')
     images = soup.find_all('img', class_="thumb")
 
+    print(images)
     # Retrieve all elements that contain image
     for i in range(len(images)):
     
         hemispheres = {}
     
-        browser.find_by_tag('img.thumb')[i].click()
+        browser.find_by_css('img.thumb')[i].click()
 
         full_img = browser.find_by_text('Sample').first
         hemispheres['img_url'] = full_img['href']
     
-        # get the image name, trim it, and add it to the hemispheres dict     
+        # get the image name and add it to the hemispheres dict     
         hemispheres['title'] = browser.find_by_css('h2.title').text 
-        if hemispheres['title'].endswith(' Enhanced thumbnail'):
-            hemispheres['title'] = hemispherename[:-(len(' Enhanced thumbnail'))]
- 
+   
         hemisphere_image_urls.append(hemispheres)  
             
-    browser.back()
+        browser.back()
         
     print(hemisphere_image_urls)
 

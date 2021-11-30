@@ -13,7 +13,7 @@ mongo = PyMongo(app, uri="mongodb://localhost:27017/mars_db")
 def index():
 
     # Find one record of data from the mongo database
-    mars = mongo.db.mars_article.find_one()
+    mars = mongo.db.mars.find_one()
 
     # Return template and data
     return render_template("index.html", mars=mars)
@@ -23,7 +23,7 @@ def index():
 @app.route("/scrape")
 def scrape():
 
-    mars = mongo.db.mars_article
+    mars = mongo.db.mars
     print("before scrape function")
     # Run the scrape function
     mars_data = scrape_data.scrape_info()

@@ -11,7 +11,7 @@
 
 
 <body style=background-color: rgb(147, 154, 162);>
-  <div class="container bg-grey">
+  <div class="container bg-light">
     <div><iframe src='https://mars.nasa.gov/embed/26372/' width='100%' height='400' scrolling='no'
         frameborder='0'></iframe></div>
     <div class="jumbotron text-center">
@@ -40,13 +40,33 @@
       <div class="col-md-6">
         <div class="row center-block" id="mars-facts">
           <h2 class="text-center"><strong>Mars Facts</strong></h2>
-          <table style="background: white;"
-          {{ mars_facts}} ></table>
+          <p>{{ mars.mars_facts | safe}} </p>
         </div>
-      
-    </div>
-  </div>
 
+      </div>
+    </div>
+    <br><br>
+    <div class="container-fluid" style="background-color: #e4d9d3;">
+      <div class="row">
+        <h1 class="text-center">Hemispheres of Mars</h1>
+        <br>
+        <div class="row">
+        {% for dict in mars.hemispheres %}
+          <div class="col-md-6">
+            <div class="card text-center" >
+              <img class="card-img-top" id="hemis-card" src="{{ dict.img_url }}" alt="Hemisphere Card Image"
+                style="width:128px;height:128px" ;>
+              <div class="card-body text-center">
+                <h4 class="card-text text-center">{{ dict.title }}</h4>
+              </div>
+            </div>
+          </div>
+      {% endfor %}
+    </div>
+    </div>
+    </div>
+
+  </div>
 </body>
 
 </html>
